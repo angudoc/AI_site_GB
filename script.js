@@ -31,4 +31,56 @@ async function fetchNews() {
 
 // Генерация новостей
 async function generateNews() {
-    const newsSection = doc
+    const newsSection = document.querySelector(".news");
+    newsSection.innerHTML = "<p>Загрузка новостей...</p>";
+
+    const newsData = await fetchNews();
+    newsSection.innerHTML = ""; // Очистить перед генерацией
+
+    const sortedNews = newsData.sort((a, b) => {
+        if (sortOrder === "desc") {
+            return new Date(b.date) - new Date(a.date);
+        } else {
+            return new Date(a.date) - new Date(b.date);
+        }
+    });
+
+    sortedNews.forEach(newsItem => {
+        const article = document.createElement("article");
+
+        const title = document.createElement("h3");
+        title.textContent = newsItem.title;
+
+        const date = document.createElement("p");
+        date.textContent = `🗓️ ${newsItem.date}`;
+        date.style.color = "#888";
+        date.style.fontSize = "0.9rem";
+
+        const content = document.createElement("p");
+        content.textContent = newsItem.content;
+
+        const link = document.createElement("a");
+        link.href = newsItem.link;
+        link.textContent = "Подробнее →";
+
+        article.appendChild(title);
+        article.appendChild(date);
+        article.appendChild(content);
+        article.appendChild(link);
+
+        newsSection.appendChild(article);
+    });
+}
+
+// Переключение порядка сортировки
+function toggleSortOrder() {
+    sortOrder = sortOrder === "desc" ? "asc" : "desc";
+    document.getElementById("sort-order").textContent = sortOrder === "desc" ? "Новые → Старые" : "Старые → Новые";
+    generateNews();
+}
+
+// Инициализация
+generateNews();
+
+// Прокрутка к секциям
+function scrollTo
